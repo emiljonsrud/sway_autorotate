@@ -27,16 +27,16 @@ int main() {
         if (fgets(buffer.data(), 128, pipe.get()) != nullptr) {
             result = buffer.data();
 
-            std::size_t last_space = result.find_last_of(" ");
-            orientation = result.substr(last_space+1);
-            orientation.erase(orientation.length()-1); // Remove newline
-
-            try {
-                command = "swaymsg output eDP-1 transform " + orientationToDegrees.at(orientation);
-                std::cout << "executing: " << command << std::endl;
-                std::system(command.c_str());
-            } catch (std::out_of_range) {
-                std::cout << "invalid orientation: " << orientation << std::endl;
+            for (
+                std::map<std::string, std::string>::const_iterator orientationPair = orientationToDegrees.begin();
+                orientationPair != orientationToDegrees.end(); 
+                ++orientationPair
+                ) {
+                if (result.find(orientationPair -> first) != result.npos) {
+                    command = "swaymsg output eDP-1 transform " + orientationPair -> second;
+                    std::cout << "executing: " << command << std::endl;
+                    std::system(command.c_str());
+                }
             }
         }
     }
